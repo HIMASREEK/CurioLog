@@ -1,0 +1,53 @@
+{% extends 'journal/base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="glass-card p-5">
+            <div class="mb-4">
+                <h2 class="section-title mb-2">✏️ Edit Entry</h2>
+                <p class="muted-text mb-0">Update and refine your journal entry.</p>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-2">Title</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-2">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-semibold mb-2">Category</label>
+                        {{ form.category }}
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-semibold mb-2">Entry Type</label>
+                        {{ form.entry_type }}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-2">Tags</label>
+                    <div class="checkbox-container glass-card p-3">
+                        {{ form.tags }}
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <button type="submit" class="btn btn-main">💾 Update Entry</button>
+                    <a href="{% url 'all_entries' %}" class="btn btn-soft">← Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -20,15 +20,15 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f8faff, #eef2ff);
-            color: #1e293b;
+            background: linear-gradient(135deg, #fce7f3, #f9a8d4, #e9d5ff);
+            color: #3b0764;
             min-height: 100vh;
         }
 
         .navbar {
-            background: rgba(79, 70, 229, 0.95);
+            background: rgba(168, 85, 247, 0.92);
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15);
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.22);
         }
 
         .navbar-brand {
@@ -45,21 +45,22 @@
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.72);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(14px);
             border-radius: 22px;
-            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 12px 40px rgba(157, 23, 77, 0.10);
         }
 
         .section-title {
             font-size: 1.6rem;
             font-weight: 800;
             letter-spacing: -0.5px;
+            color: #6b21a8;
         }
 
         .muted-text {
-            color: #64748b;
+            color: #7e6293;
         }
 
         .stat-card {
@@ -69,11 +70,12 @@
 
         .stat-card:hover {
             transform: translateY(-4px);
+            box-shadow: 0 16px 34px rgba(192, 38, 211, 0.12);
         }
 
         .stat-label {
             font-size: 0.95rem;
-            color: #64748b;
+            color: #7e6293;
             font-weight: 600;
         }
 
@@ -81,6 +83,7 @@
             font-size: 2rem;
             font-weight: 800;
             margin-top: 8px;
+            color: #86198f;
         }
 
         .entry-card {
@@ -90,7 +93,7 @@
 
         .entry-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 14px 34px rgba(79, 70, 229, 0.12);
+            box-shadow: 0 14px 34px rgba(192, 38, 211, 0.16);
         }
 
         .badge-soft {
@@ -102,54 +105,64 @@
         }
 
         .badge-type {
-            background: #dcfce7;
-            color: #166534;
+            background: #fce7f3;
+            color: #be185d;
         }
 
         .badge-category {
-            background: #ede9fe;
-            color: #5b21b6;
+            background: #f3e8ff;
+            color: #7e22ce;
         }
 
         .badge-tag {
-            background: #e0f2fe;
-            color: #075985;
+            background: #fdf2f8;
+            color: #a21caf;
             margin-right: 6px;
             margin-bottom: 6px;
         }
 
         .btn-main {
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            background: linear-gradient(90deg, #d946ef, #9333ea);
             border: none;
             color: white;
             font-weight: 600;
             border-radius: 14px;
             padding: 10px 18px;
+            box-shadow: 0 8px 20px rgba(217, 70, 239, 0.22);
         }
 
         .btn-main:hover {
             opacity: 0.95;
             color: white;
+            transform: translateY(-1px);
         }
 
         .btn-soft {
-            background: white;
-            border: 1px solid #dbeafe;
-            color: #334155;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid #f5d0fe;
+            color: #6b21a8;
             font-weight: 600;
             border-radius: 14px;
             padding: 10px 18px;
         }
 
+        .btn-soft:hover {
+            background: #fdf4ff;
+            color: #86198f;
+        }
+
         .form-control, .form-select {
             border-radius: 14px;
             padding: 12px 14px;
-            border: 1px solid #dbe3f0;
+            border: 1px solid #f5c2e7;
             box-shadow: none !important;
+            background: rgba(255, 255, 255, 0.92);
+            color: #4a044e;
         }
 
         .form-control:focus, .form-select:focus {
-            border-color: #6366f1;
+            border-color: #d946ef;
+            box-shadow: 0 0 0 0.15rem rgba(217, 70, 239, 0.12) !important;
         }
 
         .checkbox-container ul {
@@ -160,17 +173,18 @@
 
         .checkbox-container li {
             margin-bottom: 10px;
-            background: #f8fafc;
+            background: #fdf4ff;
             border-radius: 12px;
             padding: 10px 14px;
+            border: 1px solid #f5d0fe;
         }
 
         .hero-box {
             padding: 28px;
             border-radius: 24px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            background: linear-gradient(135deg, #db2777, #a855f7);
             color: white;
-            box-shadow: 0 16px 40px rgba(79, 70, 229, 0.25);
+            box-shadow: 0 16px 40px rgba(168, 85, 247, 0.28);
         }
 
         .hero-box h1 {
@@ -186,6 +200,35 @@
         canvas {
             max-height: 300px;
         }
+
+        .text-primary {
+            color: #c026d3 !important;
+        }
+
+        .text-success {
+            color: #9333ea !important;
+        }
+
+        .text-warning {
+            color: #db2777 !important;
+        }
+
+        .text-dark {
+            color: #6b21a8 !important;
+        }
+
+        .btn-danger {
+            background: linear-gradient(90deg, #ec4899, #db2777);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.95;
+        }
+
+        small.text-muted {
+            color: #8b5cf6 !important;
+        }
     </style>
 </head>
 <body>
@@ -193,9 +236,10 @@
 <nav class="navbar navbar-expand-lg px-4 py-3 mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'dashboard' %}">✨ CurioLog</a>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
             <a href="{% url 'dashboard' %}" class="btn btn-light nav-btn">Dashboard</a>
             <a href="{% url 'add_entry' %}" class="btn btn-outline-light nav-btn">+ New Entry</a>
+            <a href="{% url 'all_entries' %}" class="btn btn-outline-light nav-btn">All Entries</a>
             <a href="{% url 'export_csv' %}" class="btn btn-outline-light nav-btn">Export CSV</a>
         </div>
     </div>

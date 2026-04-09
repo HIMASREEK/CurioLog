@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
-from .models import Entry
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Entry, Category
 from .forms import EntryForm
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
 from django.http import HttpResponse
 import csv
@@ -33,11 +33,8 @@ def dashboard(request):
     # Entry type chart
     type_data = entries.values('entry_type').annotate(count=Count('id'))
 
-    # Heatmap / daily activity data
-    dates = [e.created_at.date() for e in entries]
-    heatmap_counts = Counter(dates)
-
     # Streak logic
+    dates = [e.created_at.date() for e in entries]
     streak = 0
     if dates:
         unique_dates = sorted(set(dates))
@@ -54,12 +51,11 @@ def dashboard(request):
         streak = max_streak
 
     context = {
-        'entries': entries[:5],  # latest 5 entries
+        'entries': entries[:4],  # only recent entries
         'total_entries': total_entries,
         'category_data': category_data,
         'monthly_counts': monthly_counts,
         'type_data': type_data,
-        'heatmap_counts': heatmap_counts,
         'streak': streak,
     }
 
@@ -80,6 +76,63 @@ def add_entry(request):
         form = EntryForm()
 
     return render(request, 'journal/add_entry.html', {'form': form})
+
+
+@login_required
+def all_entries(request):
+    entries = Entry.objects.filter(user=request.user).order_by('-created_at')
+    categories = Category.objects.all()
+
+    query = request.GET.get('q')
+    category = request.GET.get('category')
+    entry_type = request.GET.get('type')
+
+    if query:
+        entries = entries.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+
+    if category:
+        entries = entries.filter(category__id=category)
+
+    if entry_type:
+        entries = entries.filter(entry_type=entry_type)
+
+    context = {
+        'entries': entries,
+        'categories': categories,
+        'selected_category': category,
+        'selected_type': entry_type,
+        'search_query': query,
+    }
+
+    return render(request, 'journal/all_entries.html', context)
+
+
+@login_required
+def edit_entry(request, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id, user=request.user)
+
+    if request.method == 'POST':
+        form = EntryForm(request.POST, instance=entry)
+        if form.is_valid():
+            form.save()
+            return redirect('all_entries')
+    else:
+        form = EntryForm(instance=entry)
+
+    return render(request, 'journal/edit_entry.html', {'form': form, 'entry': entry})
+
+
+@login_required
+def delete_entry(request, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id, user=request.user)
+
+    if request.method == 'POST':
+        entry.delete()
+        return redirect('all_entries')
+
+    return render(request, 'journal/delete_entry.html', {'entry': entry})
 
 
 @login_required
