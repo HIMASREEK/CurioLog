@@ -1,0 +1,165 @@
+{% extends 'journal/base.html' %}
+
+{% block content %}
+
+<div class="hero-box mb-4">
+    <h1>Welcome back 👋</h1>
+    <p>Capture your ideas, questions, and discoveries — then reflect on how your curiosity evolves over time.</p>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="glass-card stat-card">
+            <div class="stat-label">Total Entries</div>
+            <div class="stat-number text-primary">{{ total_entries }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card stat-card">
+            <div class="stat-label">Longest Streak</div>
+            <div class="stat-number text-success">{{ streak }} 🔥</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card stat-card">
+            <div class="stat-label">Categories Used</div>
+            <div class="stat-number text-dark">{{ category_data|length }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card stat-card">
+            <div class="stat-label">Recent Entries</div>
+            <div class="stat-number text-warning">{{ entries|length }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <h4 class="section-title mb-3">📊 Entries by Category</h4>
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <h4 class="section-title mb-3">📅 Entries by Month</h4>
+            <canvas id="monthlyChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <h4 class="section-title mb-3">🧠 Entry Type Distribution</h4>
+            <canvas id="typeChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+            <h4 class="section-title mb-3">✨ Insight Snapshot</h4>
+            <p class="muted-text">This section helps you quickly understand how your curiosity is evolving.</p>
+            <ul class="mt-3">
+                <li class="mb-2">Track how often you journal your thoughts.</li>
+                <li class="mb-2">Understand which categories dominate your thinking.</li>
+                <li class="mb-2">See whether you ask more questions or generate more ideas.</li>
+                <li class="mb-2">Build a streak and stay mentally engaged every day.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="section-title mb-1">Recent Entries</h3>
+            <p class="muted-text mb-0">A quick look at your latest thoughts and discoveries.</p>
+        </div>
+        <a href="{% url 'add_entry' %}" class="btn btn-main">+ Add Entry</a>
+    </div>
+
+    {% if entries %}
+        <div class="row g-4">
+            {% for entry in entries %}
+                <div class="col-md-6">
+                    <div class="glass-card entry-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="fw-bold mb-0">{{ entry.title }}</h5>
+                            <span class="badge-soft badge-type">{{ entry.entry_type }}</span>
+                        </div>
+
+                        <p class="muted-text mb-3">{{ entry.description|truncatewords:25 }}</p>
+
+                        <div class="mb-3">
+                            <span class="badge-soft badge-category">
+                                {{ entry.category.name|default:"No Category" }}
+                            </span>
+                        </div>
+
+                        <div class="mb-3">
+                            {% for tag in entry.tags.all %}
+                                <span class="badge-soft badge-tag">{{ tag.name }}</span>
+                            {% empty %}
+                                <span class="muted-text">No tags added</span>
+                            {% endfor %}
+                        </div>
+
+                        <small class="text-muted">📌 {{ entry.created_at|date:"M d, Y - h:i A" }}</small>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <h4 class="fw-bold">No entries yet ✨</h4>
+            <p class="muted-text">Start documenting your curiosity journey today.</p>
+            <a href="{% url 'add_entry' %}" class="btn btn-main mt-2">Create First Entry</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    const categoryLabels = [{% for c in category_data %}"{{ c.category__name|default:'No Category' }}",{% endfor %}];
+    const categoryCounts = [{% for c in category_data %}{{ c.count }},{% endfor %}];
+
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'pie',
+        data: {
+            labels: categoryLabels,
+            datasets: [{
+                data: categoryCounts
+            }]
+        }
+    });
+
+    const monthlyLabels = [{% for month, count in monthly_counts.items %}"{{ month }}",{% endfor %}];
+    const monthlyValues = [{% for month, count in monthly_counts.items %}{{ count }},{% endfor %}];
+
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'bar',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                label: 'Entries',
+                data: monthlyValues
+            }]
+        }
+    });
+
+    const typeLabels = [{% for t in type_data %}"{{ t.entry_type }}",{% endfor %}];
+    const typeCounts = [{% for t in type_data %}{{ t.count }},{% endfor %}];
+
+    new Chart(document.getElementById('typeChart'), {
+        type: 'doughnut',
+        data: {
+            labels: typeLabels,
+            datasets: [{
+                data: typeCounts
+            }]
+        }
+    });
+</script>
+
+{% endblock %}
