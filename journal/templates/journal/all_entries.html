@@ -2,90 +2,106 @@
 
 {% block content %}
 
-<div class="glass-card p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h2 class="section-title mb-1">📚 All Entries</h2>
-            <p class="muted-text mb-0">Search, filter, and manage your curiosity records.</p>
-        </div>
-        <a href="{% url 'add_entry' %}" class="btn btn-main">+ New Entry</a>
-    </div>
+<div class="row justify-content-center">
+    <div class="col-lg-11">
 
-    <form method="GET" class="row g-3">
-        <div class="col-md-5">
-            <input type="text" name="q" class="form-control" placeholder="Search title or description..." value="{{ search_query|default:'' }}">
+        <!-- Header -->
+        <div class="hero-box mb-4">
+            <h1>📚 All Curiosity Entries</h1>
+            <p>Search, filter, and revisit your thoughts, ideas, questions, and discoveries.</p>
         </div>
 
-        <div class="col-md-3">
-            <select name="category" class="form-select">
-                <option value="">All Categories</option>
-                {% for cat in categories %}
-                    <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
-                        {{ cat.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="col-md-2">
-            <select name="type" class="form-select">
-                <option value="">All Types</option>
-                <option value="Question" {% if selected_type == "Question" %}selected{% endif %}>Question</option>
-                <option value="Fact" {% if selected_type == "Fact" %}selected{% endif %}>Fact</option>
-                <option value="Idea" {% if selected_type == "Idea" %}selected{% endif %}>Idea</option>
-                <option value="Experiment" {% if selected_type == "Experiment" %}selected{% endif %}>Experiment</option>
-            </select>
-        </div>
-
-        <div class="col-md-2 d-grid">
-            <button type="submit" class="btn btn-main">Apply</button>
-        </div>
-    </form>
-</div>
-
-{% if entries %}
-    <div class="row g-4">
-        {% for entry in entries %}
-            <div class="col-md-6">
-                <div class="glass-card entry-card">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="fw-bold mb-0">{{ entry.title }}</h5>
-                        <span class="badge-soft badge-type">{{ entry.entry_type }}</span>
+        <!-- Search + Filter -->
+        <div class="glass-card p-4 mb-4">
+            <form method="GET">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label fw-semibold">Search by Title / Description</label>
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search entries...">
                     </div>
 
-                    <p class="muted-text mb-3">{{ entry.description|truncatewords:28 }}</p>
-
-                    <div class="mb-3">
-                        <span class="badge-soft badge-category">
-                            {{ entry.category.name|default:"No Category" }}
-                        </span>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ cat.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     </div>
 
-                    <div class="mb-3">
-                        {% for tag in entry.tags.all %}
-                            <span class="badge-soft badge-tag">{{ tag.name }}</span>
-                        {% empty %}
-                            <span class="muted-text">No tags</span>
-                        {% endfor %}
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Type</label>
+                        <select name="type" class="form-select">
+                            <option value="">All Types</option>
+                            <option value="Question" {% if selected_type == "Question" %}selected{% endif %}>Question</option>
+                            <option value="Idea" {% if selected_type == "Idea" %}selected{% endif %}>Idea</option>
+                            <option value="Observation" {% if selected_type == "Observation" %}selected{% endif %}>Observation</option>
+                            <option value="Experiment" {% if selected_type == "Experiment" %}selected{% endif %}>Experiment</option>
+                            <option value="Learning" {% if selected_type == "Learning" %}selected{% endif %}>Learning</option>
+                        </select>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <small class="text-muted">📌 {{ entry.created_at|date:"M d, Y - h:i A" }}</small>
-                        <div class="d-flex gap-2">
-                            <a href="{% url 'edit_entry' entry.id %}" class="btn btn-sm btn-soft">Edit</a>
-                            <a href="{% url 'delete_entry' entry.id %}" class="btn btn-sm btn-danger rounded-pill px-3">Delete</a>
-                        </div>
+                    <div class="col-md-2 d-grid">
+                        <button type="submit" class="btn btn-main">Search</button>
                     </div>
                 </div>
+            </form>
+        </div>
+
+        <!-- Results -->
+        <div class="mb-3">
+            <h4 class="section-title">Your Entries</h4>
+            <p class="muted-text">{{ entries.count }} result{{ entries.count|pluralize }} found</p>
+        </div>
+
+        {% if entries %}
+            <div class="row g-4">
+                {% for entry in entries %}
+                    <div class="col-lg-6">
+                        <div class="glass-card entry-card h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-2">{{ entry.title }}</h5>
+                                    <span class="badge-soft badge-type">{{ entry.entry_type }}</span>
+                                    {% if entry.category %}
+                                        <span class="badge-soft badge-category">{{ entry.category.name }}</span>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">{{ entry.created_at|date:"d M Y" }}</small>
+                            </div>
+
+                            <p class="muted-text mb-3">
+                                {{ entry.description|truncatewords:28 }}
+                            </p>
+
+                            {% if entry.tags.all %}
+                                <div class="mb-3">
+                                    {% for tag in entry.tags.all %}
+                                        <span class="badge-soft badge-tag">#{{ tag.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'edit_entry' entry.id %}" class="btn btn-soft btn-sm">Edit</a>
+                                <a href="{% url 'delete_entry' entry.id %}" class="btn btn-danger btn-sm">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
+        {% else %}
+            <div class="glass-card p-5 text-center">
+                <h4 class="fw-bold mb-2">No entries found 😶</h4>
+                <p class="muted-text mb-3">Try a different keyword or add a new curiosity entry.</p>
+                <a href="{% url 'add_entry' %}" class="btn btn-main">+ Add Entry</a>
+            </div>
+        {% endif %}
+
     </div>
-{% else %}
-    <div class="glass-card p-5 text-center">
-        <h4 class="fw-bold">No matching entries found</h4>
-        <p class="muted-text">Try a different search or create a new entry.</p>
-        <a href="{% url 'add_entry' %}" class="btn btn-main mt-2">+ Add Entry</a>
-    </div>
-{% endif %}
+</div>
 
 {% endblock %}

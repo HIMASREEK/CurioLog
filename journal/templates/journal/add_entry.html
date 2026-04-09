@@ -2,90 +2,71 @@
 
 {% block content %}
 
-<div class="glass-card p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h2 class="section-title mb-1">📚 All Entries</h2>
-            <p class="muted-text mb-0">Search, filter, and manage your curiosity records.</p>
-        </div>
-        <a href="{% url 'add_entry' %}" class="btn btn-main">+ New Entry</a>
-    </div>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="glass-card p-5">
+            <div class="mb-4">
+                <h2 class="section-title mb-2">✍️ Add New Curiosity Entry</h2>
+                <p class="muted-text mb-0">
+                    Capture an idea, question, experiment, observation, or learning moment.
+                </p>
+            </div>
 
-    <form method="GET" class="row g-3">
-        <div class="col-md-5">
-            <input type="text" name="q" class="form-control" placeholder="Search title or description..." value="{{ search_query|default:'' }}">
-        </div>
+            <form method="POST">
+                {% csrf_token %}
 
-        <div class="col-md-3">
-            <select name="category" class="form-select">
-                <option value="">All Categories</option>
-                {% for cat in categories %}
-                    <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
-                        {{ cat.name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+                {% if form.errors %}
+                    <div class="alert alert-danger mb-4">
+                        <strong>Please fix the following errors:</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
 
-        <div class="col-md-2">
-            <select name="type" class="form-select">
-                <option value="">All Types</option>
-                <option value="Question" {% if selected_type == "Question" %}selected{% endif %}>Question</option>
-                <option value="Fact" {% if selected_type == "Fact" %}selected{% endif %}>Fact</option>
-                <option value="Idea" {% if selected_type == "Idea" %}selected{% endif %}>Idea</option>
-                <option value="Experiment" {% if selected_type == "Experiment" %}selected{% endif %}>Experiment</option>
-            </select>
-        </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-2">Title</label>
+                    {{ form.title }}
+                </div>
 
-        <div class="col-md-2 d-grid">
-            <button type="submit" class="btn btn-main">Apply</button>
-        </div>
-    </form>
-</div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-2">Description</label>
+                    {{ form.description }}
+                </div>
 
-{% if entries %}
-    <div class="row g-4">
-        {% for entry in entries %}
-            <div class="col-md-6">
-                <div class="glass-card entry-card">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="fw-bold mb-0">{{ entry.title }}</h5>
-                        <span class="badge-soft badge-type">{{ entry.entry_type }}</span>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-semibold mb-2">Category</label>
+                        {{ form.category }}
                     </div>
 
-                    <p class="muted-text mb-3">{{ entry.description|truncatewords:28 }}</p>
-
-                    <div class="mb-3">
-                        <span class="badge-soft badge-category">
-                            {{ entry.category.name|default:"No Category" }}
-                        </span>
-                    </div>
-
-                    <div class="mb-3">
-                        {% for tag in entry.tags.all %}
-                            <span class="badge-soft badge-tag">{{ tag.name }}</span>
-                        {% empty %}
-                            <span class="muted-text">No tags</span>
-                        {% endfor %}
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <small class="text-muted">📌 {{ entry.created_at|date:"M d, Y - h:i A" }}</small>
-                        <div class="d-flex gap-2">
-                            <a href="{% url 'edit_entry' entry.id %}" class="btn btn-sm btn-soft">Edit</a>
-                            <a href="{% url 'delete_entry' entry.id %}" class="btn btn-sm btn-danger rounded-pill px-3">Delete</a>
-                        </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-semibold mb-2">Entry Type</label>
+                        {{ form.entry_type }}
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-2">Tags</label>
+                    <div class="checkbox-container">
+                        {{ form.tags }}
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-main">Save Entry</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-soft">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
-{% else %}
-    <div class="glass-card p-5 text-center">
-        <h4 class="fw-bold">No matching entries found</h4>
-        <p class="muted-text">Try a different search or create a new entry.</p>
-        <a href="{% url 'add_entry' %}" class="btn btn-main mt-2">+ Add Entry</a>
-    </div>
-{% endif %}
+</div>
 
 {% endblock %}

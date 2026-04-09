@@ -1,12 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Entry, Category
-from .forms import EntryForm
+from .forms import EntryForm, RegisterForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.db.models.functions import TruncMonth
 from django.http import HttpResponse
+from django.contrib.auth import login
 import csv
-from collections import Counter
+
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('dashboard')
+    else:
+        form = RegisterForm()
+
+    return render(request, 'journal/register.html', {'form': form})
 
 
 @login_required
@@ -14,10 +30,8 @@ def dashboard(request):
     entries = Entry.objects.filter(user=request.user).order_by('-created_at')
     total_entries = entries.count()
 
-    # Category chart data
     category_data = entries.values('category__name').annotate(count=Count('id'))
 
-    # Monthly chart data
     monthly_counts_qs = (
         entries.annotate(month=TruncMonth('created_at'))
         .values('month')
@@ -30,10 +44,8 @@ def dashboard(request):
         for item in monthly_counts_qs if item['month']
     }
 
-    # Entry type chart
     type_data = entries.values('entry_type').annotate(count=Count('id'))
 
-    # Streak logic
     dates = [e.created_at.date() for e in entries]
     streak = 0
     if dates:
@@ -51,7 +63,7 @@ def dashboard(request):
         streak = max_streak
 
     context = {
-        'entries': entries[:4],  # only recent entries
+        'entries': entries[:4],
         'total_entries': total_entries,
         'category_data': category_data,
         'monthly_counts': monthly_counts,
@@ -72,6 +84,8 @@ def add_entry(request):
             entry.save()
             form.save_m2m()
             return redirect('dashboard')
+        else:
+            print(form.errors)   # debug
     else:
         form = EntryForm()
 
@@ -83,9 +97,9 @@ def all_entries(request):
     entries = Entry.objects.filter(user=request.user).order_by('-created_at')
     categories = Category.objects.all()
 
-    query = request.GET.get('q')
-    category = request.GET.get('category')
-    entry_type = request.GET.get('type')
+    query = request.GET.get('q', '').strip()
+    category = request.GET.get('category', '').strip()
+    entry_type = request.GET.get('type', '').strip()
 
     if query:
         entries = entries.filter(

@@ -1,0 +1,39 @@
+{% extends 'journal/base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-5">
+        <div class="glass-card p-5">
+            <div class="text-center mb-4">
+                <h2 class="section-title mb-2">🔐 Welcome Back</h2>
+                <p class="muted-text">Login to continue your curiosity journey.</p>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-2">Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="Enter username">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold mb-2">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Enter password">
+                </div>
+
+                <button type="submit" class="btn btn-main w-100">Login</button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="muted-text mb-0">
+                    Don’t have an account?
+                    <a href="{% url 'register' %}" class="fw-semibold text-decoration-none">Register here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

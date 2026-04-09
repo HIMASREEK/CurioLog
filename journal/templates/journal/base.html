@@ -42,6 +42,7 @@
             border-radius: 12px;
             font-weight: 600;
             padding: 8px 16px;
+            border: none;
         }
 
         .glass-card {
@@ -151,17 +152,17 @@
             color: #86198f;
         }
 
-        .form-control, .form-select {
-            border-radius: 14px;
-            padding: 12px 14px;
-            border: 1px solid #f5c2e7;
+        .form-control, .form-select, textarea, select, input {
+            border-radius: 14px !important;
+            padding: 12px 14px !important;
+            border: 1px solid #f5c2e7 !important;
             box-shadow: none !important;
-            background: rgba(255, 255, 255, 0.92);
-            color: #4a044e;
+            background: rgba(255, 255, 255, 0.92) !important;
+            color: #4a044e !important;
         }
 
-        .form-control:focus, .form-select:focus {
-            border-color: #d946ef;
+        .form-control:focus, .form-select:focus, textarea:focus, select:focus, input:focus {
+            border-color: #d946ef !important;
             box-shadow: 0 0 0 0.15rem rgba(217, 70, 239, 0.12) !important;
         }
 
@@ -220,14 +221,33 @@
         .btn-danger {
             background: linear-gradient(90deg, #ec4899, #db2777);
             border: none;
+            color: white;
         }
 
         .btn-danger:hover {
             opacity: 0.95;
+            color: white;
         }
 
         small.text-muted {
             color: #8b5cf6 !important;
+        }
+
+        .logout-form {
+            display: inline;
+            margin: 0;
+        }
+
+        .logout-form button {
+            border: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .alert {
+            border-radius: 16px;
         }
     </style>
 </head>
@@ -236,11 +256,22 @@
 <nav class="navbar navbar-expand-lg px-4 py-3 mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'dashboard' %}">✨ CurioLog</a>
-        <div class="d-flex gap-2 flex-wrap">
-            <a href="{% url 'dashboard' %}" class="btn btn-light nav-btn">Dashboard</a>
-            <a href="{% url 'add_entry' %}" class="btn btn-outline-light nav-btn">+ New Entry</a>
-            <a href="{% url 'all_entries' %}" class="btn btn-outline-light nav-btn">All Entries</a>
-            <a href="{% url 'export_csv' %}" class="btn btn-outline-light nav-btn">Export CSV</a>
+
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn btn-light nav-btn">Dashboard</a>
+                <a href="{% url 'add_entry' %}" class="btn btn-outline-light nav-btn">+ New Entry</a>
+                <a href="{% url 'all_entries' %}" class="btn btn-outline-light nav-btn">All Entries</a>
+                <a href="{% url 'export_csv' %}" class="btn btn-outline-light nav-btn">Export CSV</a>
+
+                <form method="POST" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-light nav-btn">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-light nav-btn">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-light nav-btn">Register</a>
+            {% endif %}
         </div>
     </div>
 </nav>
